@@ -1,83 +1,78 @@
+# 🤖 Бот диалогов в стиле Картмана (на русском языке)
 
-# 🤖 Cartman-style Russian Dialogue Bot
-
-This project is a fine-tuned conversational model that simulates the speech style of **Eric Cartman** from the TV series *South Park*, using Russian-language data. The system is built using Hugging Face Transformers and deployed as a Telegram bot.
+Этот проект представляет собой дообученную диалоговую модель, имитирующую стиль речи **Эрика Картмана** из мультсериала *Южный Парк*. Модель работает на русском языке, использует библиотеку Hugging Face Transformers и развёрнута в виде Telegram-бота.
 
 ---
 
-## 🧠 Model Training Overview
+## 🧠 Обзор обучения модели
 
-### 📝 Dataset
+### 📝 Датасет
 
-The training dataset was manually prepared and includes real and generated dialogues with the following format:
-- Contexts are wrapped in `[OTHER] ... [/OTHER]`
-- Responses are wrapped in `[CARTMAN] ... [/CARTMAN]`
-- Texts are translated to Russian using `facebook/nllb-200-distilled-600M`
+Датасет был собран вручную и содержит как реальные, так и сгенерированные диалоги. Формат данных следующий:
+- Контекст оборачивается в теги `[OTHER] ... [/OTHER]`
+- Ответы Картмана оборачиваются в `[CARTMAN] ... [/CARTMAN]`
+- Все тексты переведены на русский язык с помощью модели `facebook/nllb-200-distilled-600M`
 
-### 🧪 Training Setup
+### 🧪 Параметры обучения
 
-- Base model: `sberbank-ai/rugpt3small_based_on_gpt2`
-- Library: `transformers`, `datasets`, `Trainer`
-- Trained for 5 epochs
-- Best model selected based on validation loss
-- Logging of train and validation loss each epoch
+- Базовая модель: `sberbank-ai/rugpt3small_based_on_gpt2`
+- Используемые библиотеки: `transformers`, `datasets`, `Trainer`
+- Количество эпох: 5
+- Выбор лучшей модели по наименьшей валидационной потере
+- Логгирование потерь (train и validation) по эпохам
 
-### 📈 Loss Graph
+### 📈 График потерь
 
-Below is the loss graph during training:
+Ниже представлен график потерь во время обучения:
 
 ![training_loss_plot](training_loss_plot.png)
 
 ---
 
-## 🚀 Deployment (Docker)
+## 🚀 Развёртывание через Docker
 
-1. **Build the Docker container:**
+1. **Собрать Docker-образ:**
 
 ```bash
 docker build -t cartman-bot .
 ```
 
-2. **Run the bot:**
+2. **Запустить контейнер с Telegram-токеном:**
 
 ```bash
-docker run -e TELEGRAM_TOKEN=your_token_here cartman-bot
+docker run -e TELEGRAM_TOKEN=ваш_токен_здесь cartman-bot
 ```
 
 ---
 
-## 📂 Project Structure
+## 📂 Структура проекта
 
 ```
-├── cartman_model_best/        # Trained model + tokenizer
-├── training_logs.json         # Training metrics
-├── training_loss_plot.png     # Loss curve
-├── inference.py               # Reply generation function
-├── telegram_bot.py            # Telegram polling bot
-├── Dockerfile
-├── requirements.txt
+├── app/cartman_model_best/        # Обученная модель и токенизатор
+├── training_logs.json         # Лог обучения
+├── training_loss_plot.png     # График потерь
+├── app/inference.py               # Генерация ответа
+├── app/telegram_bot.py            # Телеграм-бот (polling)
+├── app/Dockerfile
+├── app/requirements.txt
 └── README.md
 ```
 
 ---
 
-## 📬 Example usage
+## 📬 Пример использования
 
-**User:**
+**Пользователь:**
 > Почему ты опять проспал, Эрик?
 
-**Bot:**
+**Бот:**
 > Потому что ваши дурацкие уроки — это для лузеров, понял?
 
 ---
 
-## 🇷🇺 Описание на русском
+## ℹ️ О проекте
 
-Этот проект — Telegram-бот, разговаривающий в стиле Эрика Картмана. Модель обучена на русском языке с учётом стилистики персонажа. В проекте реализовано:
-- Подготовка и перевод датасета
-- Генерация фраз с учётом контекста
-- Запуск через polling в Telegram
-
-Для запуска используйте Docker-инструкции выше или обычный `python telegram_bot.py`.
-
----
+Проект реализует Telegram-бота, который отвечает в характерной манере Картмана. Поддерживаются:
+- Перевод и обработка диалогов
+- Генерация ответов с учётом истории
+- Запуск как из Docker, так и напрямую через `python telegram_bot.py`
