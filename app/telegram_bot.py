@@ -3,7 +3,7 @@ from app.inference import generate_cartman_reply
 import random
 
 # 🔐 Подставь свой Telegram токен
-API_TOKEN = '7677914008:AAFDOphJrYGcsc7YO2nKHg92mjNXg3_KXEw'
+API_TOKEN = '###'
 bot = telebot.TeleBot(API_TOKEN)
 
 # 💬 История сообщений по каждому пользователю
@@ -13,31 +13,22 @@ user_histories = {}
 def build_context(user_id, max_turns=5):
     history = user_histories.get(user_id, [])
     # Только последние max_turns*2 фраз
-    history = history[-(max_turns * 2):]
+    history = history[-(max_turns):]
     context = ""
     for turn in history:
         tag = "[OTHER]" if turn["role"] == "OTHER" else "[CARTMAN]"
         context += f"{tag} {turn['text']} {tag.replace('[', '[/')}\n"
+
+    # 🔥 если в истории нет реплик Картмана — добавим шаблон
+    if not any(turn["role"] == "CARTMAN" for turn in history):
+        context += "[OTHER] Кто ты вообще такой? [/OTHER]\n[CARTMAN] Я — Картман, тупица! [/CARTMAN]\n"
     return context, history
 
 
-
-# 🆕 Список стартовых фраз Картмана
-cartman_start_phrases = [
-    "Если ещё раз кто-то скажет 'привет', я взорвусь.",
-    "Я не толстый, я просто большой кости!",
-    "Ты говоришь, как Кайл. А я ненавижу Кайла.",
-    "О, замечательно. Теперь ты тоже хочешь поговорить со мной?",
-    "Вы все — отстой. Ну привет, короче.",
-    "Бро, у меня настроение хуже, чем оценки у Баттерса.",
-    "Что?! Снова ты? Ладно, давай по-быстрому."
-]
-
-# 🟢 Реакция на /start
+# /start
 @bot.message_handler(commands=["start"])
 def handle_start(message):
-    phrase = random.choice(cartman_start_phrases)
-    bot.send_message(chat_id=message.chat.id, text=phrase)
+    pass
 
 # 📬 Обработка сообщений
 @bot.message_handler(content_types=['text'])
@@ -49,8 +40,6 @@ def handle_message(message):
     context, history = build_context(user_id)
     full_context = f"{context}[OTHER] {user_text} [/OTHER]\n[CARTMAN]"
     reply = generate_cartman_reply(full_context)
-    print('full_context', full_context)
-    print('reply', reply)
     # Обновляем историю
     history.append({"role": "OTHER", "text": user_text})
     history.append({"role": "CARTMAN", "text": reply})
