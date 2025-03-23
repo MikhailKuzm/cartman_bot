@@ -3,3 +3,4 @@ optimizer.pt
 *.pth
 *.bin
 __pycache__
+checkpoint*
