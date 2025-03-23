@@ -3,4 +3,4 @@ optimizer.pt
 *.pth
 *.bin
 __pycache__
-checkpoint*
+app\cartman_model_best
